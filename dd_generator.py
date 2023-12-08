@@ -594,8 +594,7 @@ def main():
                 continue
 
         # for debug
-        dd_name = dvice_dd['deviceType']
-        print('device: {}'.format(dd_name))
+        print('device: {}'.format(dvice_dd['deviceType']))
         print('path : {}'.format(dd_file_path))
 
         # generate properties
@@ -604,23 +603,16 @@ def main():
         # add common properties to properties
         device_props.update(props_generator(dict_comm_dd, '0x0000'))
 
-        # generate device info
-        # device_info = info_generator(dvice_dd['deviceType'], device_props)
-
         # generate device description
         device_description = desc_generator(dvice_dd)
 
         
         if full_cover != True:
-            print('no full cover', full_cover)
+            # print('no full cover', full_cover)
+            # generate device info
             device_info = info_generator(dvice_dd['deviceType'], device_props)
-            output_list.append(
-                {
-                    'info':device_info, 
-                    'properties': device_props,
-                    'dd': device_description
-                }
-            )
+            output_list.append(output_format(device_info, device_props, device_description))
+
         else:
             print('mode:', config.full_cover_mode)
 
@@ -638,15 +630,11 @@ def main():
                 while len_count < max_len:
                     tmp_dict = pair_available_values(copy.deepcopy(device_props), len_count)
                     # print(tmp_dict)
+            
+                    # generate device info
                     device_info = info_generator(dvice_dd['deviceType'], tmp_dict)
 
-                    output_list.append(
-                        {
-                            'info':device_info, 
-                            'properties': tmp_dict,
-                            'dd': device_description
-                        }
-                    )
+                    output_list.append(output_format(device_info, tmp_dict, device_description))
 
                     len_count += 1
 
@@ -676,6 +664,14 @@ def main():
                     dev_props)
 
         output_list = []
+
+
+def output_format(info, props, dd):
+    return {
+            'info':info, 
+            'properties': props,
+            'dd': dd
+        }
 
 
 def pair_available_values(data, count, path = []):
@@ -791,6 +787,10 @@ def clear_and_find_longest_list_in_data(data):
     return max_len
 
 
+
+
 if __name__ == '__main__':
     # main(int(sys.argv[1]))
+    start_time = time.time()
     main()
+    print('time cost : {}'.format(time.time() - start_time))
